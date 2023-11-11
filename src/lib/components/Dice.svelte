@@ -20,6 +20,7 @@
     let startBtn:HTMLButtonElement;
     let rollResult:HTMLParagraphElement;
     let gift:HTMLParagraphElement;
+    let appBody:HTMLDivElement;
     
     let renderer, scene, camera, diceMesh, physicsWorld, intervalID1, intervalID2, intervalID3, body;
     let CANNON;
@@ -234,8 +235,8 @@
 
         renderer.shadowMap.enabled = true
         renderer.setPixelRatio(Math.min(window.devicePixelRatio, 10));
-        renderer.setSize(300, 300);
-        renderer.setClearColor(0xf5f5f5);
+        renderer.setSize(300, 400);
+        renderer.setClearColor(0xffffff);
     };
 
     const initScene = () => {
@@ -243,10 +244,10 @@
         scene = new THREE.Scene();
 
         //  add camera
-        camera = new THREE.PerspectiveCamera(45, 300 / 300, .1, 300)
+        camera = new THREE.PerspectiveCamera(45, 300 / 400, .1, 300)
         camera.position.set(2, 1.5, 2);
         camera.lookAt(0, -0.5, 0);
-        camera.aspect = 300 / 300;
+        camera.aspect = 300 / 400;
         camera.updateProjectionMatrix();
 
         //  add lights 
@@ -386,7 +387,7 @@
                 animate();
             });
 
-            canvasEL.addEventListener('mouseover', () => {
+            appBody.addEventListener('mouseover', () => {
                 if(params.isAnimate) {
                     params.isAnimate = false;
                     clearInterval(intervalID1);
@@ -412,7 +413,7 @@
 
 </script>
 
-<div class="h-[580px] bg-white-500 text-center">
+<div bind:this={appBody} class="h-[580px] bg-white-500 text-center" id="app_body">
     <p bind:this={rollResult} class="text-4xl hidden text-green-600" id="roll_result"></p>
     <canvas bind:this={canvasEL} id="dice"></canvas>
     <button bind:this={startBtn} class="absolute play-button" id="start_btn">Start</button>
@@ -428,6 +429,7 @@
 	}
     #dice {
         position: absolute;
+        top: -5%;
         left: 50%;
 		transform: translate(-50%, 50%);
     }
