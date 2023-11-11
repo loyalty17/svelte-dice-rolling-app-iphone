@@ -384,11 +384,13 @@
         .then((module) => {
 
             CANNON = module;
-
             initPhysics();
             initRender();
             initScene();
             initDice();
+
+            params.isAnimate = true;
+            animate();
 
             startBtn.addEventListener('click', () => {
                 startBtn.style.display = 'none';
@@ -431,7 +433,7 @@
 <div bind:this={appBody} class="h-[580px] bg-white-500 text-center" id="app_body">
     <p bind:this={rollResult} class="text-4xl hidden text-green-600" id="roll_result"></p>
     <canvas bind:this={canvasEL} id="dice"></canvas>
-    <button bind:this={startBtn} class="absolute play-button" id="start_btn">Start</button>
+    <button bind:this={startBtn} class="absolute play-button hidden" id="start_btn">Start</button>
     <p bind:this={gift} class="text-4xl hidden text-green-600" id="gift"></p>
 </div>
 
