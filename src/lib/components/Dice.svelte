@@ -119,9 +119,9 @@
             new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
             new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
             new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
-            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
-            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
             new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
         ];
         
         diceMesh = new THREE.Mesh(geometry, material);
@@ -320,33 +320,47 @@
             let isMinusHalfPi = (angle:any) => Math.abs(.5 * Math.PI + angle) < eps;
             let isPiOrMinusPi = (angle:any) => (Math.abs(Math.PI - angle) < eps || Math.abs(Math.PI + angle) < eps);
 
+            let isWin = true;
+
             if (isZero(euler.z)) {
                 if (isZero(euler.x)) {
                     // alert("top");
+                    isWin = true;
                 } else if (isHalfPi(euler.x)) {
                     // alert("back");
+                    isWin = true;
                 } else if (isMinusHalfPi(euler.x)) {
                     // alert("front");
+                    isWin = true;
                 } else if (isPiOrMinusPi(euler.x)) {
                     // alert("bottom");
+                    isWin = false;
                 } else {
                     body.allowSleep = true;
                 }
             } else if (isHalfPi(euler.z)) {
                 // alert("right");
+                isWin = false;
             } else if (isMinusHalfPi(euler.z)) {
                 // alert("left");
+                isWin = false;
             } else {
                 body.allowSleep = true;
             }
 
             params.isAnimate = false;
             
-            rollResult.style.display = 'block';
-            rollResult.innerHTML = "WIN";
-            
+            rollResult.style.display = 'block';            
             gift.style.display = 'block';
-            gift.innerHTML = "Starbucks Americano";
+
+            if(isWin) {
+                rollResult.innerHTML = "WIN";
+                gift.innerHTML = "Starbucks Americano";
+            } else {
+                rollResult.innerHTML = "SORRY";
+                rollResult.style.color = "red";
+                gift.innerHTML = "Have a nice day!";
+            }
 
             params.stoppedTime = performance.now();
             intervalID2 = setInterval(waitSomeTodoAgain, 1000);
@@ -359,8 +373,9 @@
         intervalID1 = setInterval(determineXYZ, 1000);
         params.xyz = getRandomInt(0, 59) % 6;
 
-        renderer.render(scene, camera);
+        rollResult.style.color = "green";
 
+        renderer.render(scene, camera);
     }
 
     const init = () => {
