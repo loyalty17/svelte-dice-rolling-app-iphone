@@ -3,6 +3,13 @@
     import * as THREE from 'three';
     import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
+    const RIGHT_GIFT = 'SORRY';
+    const LEFT_GIFT = 'Starbucks Americano';
+    const TOP_GIFT = 'GIFT A';
+    const BOTTOM_GIFT = 'GIFT B';
+    const FRONT_GIFT = 'GIFT C';
+    const BACK_GIFT = 'GIFT D';
+
     const params = {
         segments: 80,
         edgeRadius: .12,
@@ -14,9 +21,11 @@
         stoppedTime: 0,
         trigger: 0,
         demoModeStopTime: 0,
+        gift: '',
     };
 
     let canvasEL:HTMLCanvasElement;
+    let startText:HTMLParagraphElement;
     let startBtn:HTMLButtonElement;
     let rollResult:HTMLParagraphElement;
     let gift:HTMLParagraphElement;
@@ -25,7 +34,34 @@
     let renderer, scene, camera, diceMesh, physicsWorld, intervalID1, intervalID2, intervalID3, body;
     let CANNON;
 
-    const changeCanvas = (canvas:HTMLCanvasElement, ctx:any, isWin:boolean) => {
+    // const changeCanvas1 = (canvas:HTMLCanvasElement, ctx:any, isWin:boolean) => {
+    //     window.devicePixelRatio = 10;
+    //     const size = 300;
+    //     canvas.style.width = size + "px"; 
+    //     canvas.style.height = size + "px";
+        
+    //     const scale = window.devicePixelRatio;
+    //     canvas.width = Math.floor(size * scale); 
+    //     canvas.height = Math.floor(size * scale); 
+        
+    //     if(ctx) {
+    //         ctx.font = 'bold 300pt Arial';
+    //         ctx.fillStyle = 'white';
+    //         ctx.fillRect(0, 0, canvas.width, canvas.height);
+    //         ctx.fillStyle = 'black';
+    //         ctx.textAlign = 'center';
+    //         ctx.textBaseline = 'middle';
+    //         if(!isWin) {
+    //             ctx.fillText("SORRY", canvas.width / 2, canvas.height / 2);
+    //         } else {
+    //             ctx.fillText("Starbucks", canvas.width / 2, canvas.height * 2 / 5);
+    //             ctx.fillText("Americano", canvas.width / 2, canvas.height * 3 / 5);
+    //         }
+    //         ctx.scale(scale, scale);
+    //     }
+    // };
+
+    const changeCanvas2 = (canvas:HTMLCanvasElement, ctx:any, gift:string) => {
         window.devicePixelRatio = 10;
         const size = 300;
         canvas.style.width = size + "px"; 
@@ -42,11 +78,11 @@
             ctx.fillStyle = 'black';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
-            if(!isWin) {
-                ctx.fillText("SORRY", canvas.width / 2, canvas.height / 2);
-            } else {
+            if(gift == 'Starbucks Americano') {
                 ctx.fillText("Starbucks", canvas.width / 2, canvas.height * 2 / 5);
                 ctx.fillText("Americano", canvas.width / 2, canvas.height * 3 / 5);
+            } else {
+                ctx.fillText(gift, canvas.width / 2, canvas.height / 2);
             }
             ctx.scale(scale, scale);
         }
@@ -104,24 +140,41 @@
         
         const geometry = createBoxGeometry();
 
-        let canvas1 = document.createElement('canvas'), ctx1 = canvas1.getContext('2d');  //  right
-        let canvas2 = document.createElement('canvas'), ctx2 = canvas2.getContext('2d');  //  left
+        let canvas1 = document.createElement('canvas'), ctx1 = canvas1.getContext('2d');
+        let canvas2 = document.createElement('canvas'), ctx2 = canvas2.getContext('2d');
+        let canvas3 = document.createElement('canvas'), ctx3 = canvas3.getContext('2d');
+        let canvas4 = document.createElement('canvas'), ctx4 = canvas4.getContext('2d');
+        let canvas5 = document.createElement('canvas'), ctx5 = canvas5.getContext('2d');
+        let canvas6 = document.createElement('canvas'), ctx6 = canvas6.getContext('2d');
+
         let texture1 = new THREE.Texture(canvas1);
         let texture2 = new THREE.Texture(canvas2);
+        let texture3 = new THREE.Texture(canvas3);
+        let texture4 = new THREE.Texture(canvas4);
+        let texture5 = new THREE.Texture(canvas5);
+        let texture6 = new THREE.Texture(canvas6);
 
-        changeCanvas(canvas1, ctx1, true);
-        changeCanvas(canvas2, ctx2, false);
+        changeCanvas2(canvas1, ctx1, RIGHT_GIFT);    //  right
+        changeCanvas2(canvas2, ctx2, LEFT_GIFT);     //  left
+        changeCanvas2(canvas3, ctx3, TOP_GIFT);      //  top
+        changeCanvas2(canvas4, ctx4, BOTTOM_GIFT);   //  bottom
+        changeCanvas2(canvas5, ctx5, FRONT_GIFT);    //  front
+        changeCanvas2(canvas6, ctx6, BACK_GIFT);     //  back
 
         texture1.needsUpdate = true;
         texture2.needsUpdate = true;
+        texture3.needsUpdate = true;
+        texture4.needsUpdate = true;
+        texture5.needsUpdate = true;
+        texture6.needsUpdate = true;
 
         const material = [
-            new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
-            new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
             new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
             new THREE.MeshStandardMaterial({map: texture2, metalness: 0, roughness: 0, color: 0xeeeeee}),
-            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
-            new THREE.MeshStandardMaterial({map: texture1, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture3, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture4, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture5, metalness: 0, roughness: 0, color: 0xeeeeee}),
+            new THREE.MeshStandardMaterial({map: texture6, metalness: 0, roughness: 0, color: 0xeeeeee}),
         ];
         
         diceMesh = new THREE.Mesh(geometry, material);
@@ -159,11 +212,12 @@
     const goBackDemoMode = () => {
         let ctime = performance.now();
 
-        if(ctime - params.demoModeStopTime > 3000) {
+        if(ctime - params.demoModeStopTime > 5000) {
             clearInterval(intervalID3);
             initPhysics();
             initScene();
             initDice();
+            startText.style.display = 'none';
             startBtn.style.display = 'none';
             params.isAnimate = true;
             params.stime = performance.now();
@@ -323,27 +377,27 @@
             let isWin = true;
 
             if (isZero(euler.z)) {
-                if (isZero(euler.x)) {
-                    // alert("top");
+                if (isZero(euler.x)) {  //  top
                     isWin = true;
-                } else if (isHalfPi(euler.x)) {
-                    // alert("back");
+                    params.gift = TOP_GIFT;
+                } else if (isHalfPi(euler.x)) { //  back
                     isWin = true;
-                } else if (isMinusHalfPi(euler.x)) {
-                    // alert("front");
+                    params.gift = BACK_GIFT;
+                } else if (isMinusHalfPi(euler.x)) {    //  front
                     isWin = true;
-                } else if (isPiOrMinusPi(euler.x)) {
-                    // alert("bottom");
-                    isWin = false;
+                    params.gift = FRONT_GIFT;
+                } else if (isPiOrMinusPi(euler.x)) {    //  bottom
+                    isWin = true;
+                    params.gift = BOTTOM_GIFT;
                 } else {
                     body.allowSleep = true;
                 }
-            } else if (isHalfPi(euler.z)) {
-                // alert("right");
+            } else if (isHalfPi(euler.z)) { //  right
                 isWin = false;
-            } else if (isMinusHalfPi(euler.z)) {
-                // alert("left");
-                isWin = false;
+                params.gift = RIGHT_GIFT;
+            } else if (isMinusHalfPi(euler.z)) {    //  left
+                isWin = true;
+                params.gift = LEFT_GIFT;
             } else {
                 body.allowSleep = true;
             }
@@ -355,7 +409,7 @@
 
             if(isWin) {
                 rollResult.innerHTML = "WIN";
-                gift.innerHTML = "Starbucks Americano";
+                gift.innerHTML = params.gift;
             } else {
                 rollResult.innerHTML = "SORRY";
                 rollResult.style.color = "red";
@@ -393,6 +447,7 @@
             animate();
 
             startBtn.addEventListener('click', () => {
+                startText.style.display = 'none';
                 startBtn.style.display = 'none';
                 params.stime = performance.now();
                 clearInterval(intervalID1);
@@ -408,6 +463,7 @@
                 if(params.isAnimate) {
                     params.isAnimate = false;
                     clearInterval(intervalID1);
+                    startText.style.display = 'block';
                     startBtn.style.display = 'block';
 
                     params.demoModeStopTime = performance.now();
@@ -432,6 +488,7 @@
 
 <div bind:this={appBody} class="h-[580px] bg-white-500 text-center" id="app_body">
     <p bind:this={rollResult} class="text-4xl hidden text-green-600" id="roll_result"></p>
+    <p bind:this={startText} class="text-xl hidden text-green-600" id="start_text">Press START button to start game!</p>
     <canvas bind:this={canvasEL} id="dice"></canvas>
     <button bind:this={startBtn} class="absolute play-button hidden" id="start_btn">Start</button>
     <p bind:this={gift} class="text-4xl hidden text-green-600" id="gift"></p>
@@ -457,6 +514,12 @@
     #roll_result {
         position: absolute;
         top: 20%;
+        left: 50%;
+		transform: translate(-50%, -50%);
+    }
+    #start_text {
+        position: absolute;
+        top: 15%;
         left: 50%;
 		transform: translate(-50%, -50%);
     }
