@@ -3,12 +3,27 @@
     import * as THREE from 'three';
     import * as BufferGeometryUtils from 'three/addons/utils/BufferGeometryUtils.js';
 
+    // const RIGHT_GIFT = 'RIGHT';
+    // const LEFT_GIFT = 'LEFT';
+    // const TOP_GIFT = 'TOP';
+    // const BOTTOM_GIFT = 'BOTTOM';
+    // const FRONT_GIFT = 'FRONT';
+    // const BACK_GIFT = 'BACK';
+
     const RIGHT_GIFT = 'SORRY';
     const LEFT_GIFT = 'Starbucks Americano';
     const TOP_GIFT = 'GIFT A';
     const BOTTOM_GIFT = 'GIFT B';
     const FRONT_GIFT = 'GIFT C';
     const BACK_GIFT = 'GIFT D';
+
+    //  mode 1: TOP GIFT A
+    //  mode 2: BACK GIFT D
+    //  mode 3: BOTTOM GIFT B
+    //  mode 4: FRONT GIFT C
+    //  mode 5: RIGHT SORRY
+    //  mode 6: LEFT Starbucks Americano
+
 
     const params = {
         segments: 80,
@@ -22,6 +37,9 @@
         trigger: 0,
         demoModeStopTime: 0,
         gift: '',
+        changeFlag: true,
+        isFirstRoll: 0,
+        mode: 6,
     };
 
     let canvasEL:HTMLCanvasElement;
@@ -190,29 +208,37 @@
     const waitSomeTodoAgain = () => {
         let ctime = performance.now();
 
-        if(ctime - params.stoppedTime >= 2) {
+        if(ctime - params.stoppedTime >= 2000) {
             clearInterval(intervalID2);
-
-            initPhysics();
-            initScene();
-            initDice();
-
-            params.stime = performance.now();
-
-            rollResult.style.display = 'none';
-            rollResult.innerHTML = "";
-            
-            gift.style.display = 'none';
-            gift.innerHTML = "";
-
-            animate();
+            window.location.reload();        
         }
+
+        // if(ctime - params.stoppedTime >= 2000) {
+        //     clearInterval(intervalID2);
+
+        //     initPhysics();
+        //     initRender();
+        //     initScene();
+        //     initDice();
+
+
+        //     rollResult.style.display = 'none';
+        //     rollResult.innerHTML = "";
+            
+        //     gift.style.display = 'none';
+        //     gift.innerHTML = "";
+
+        //     params.isAnimate = true;
+        //     params.stime = performance.now();
+        //     params.changeFlag = true;
+        //     animate(); params.isFirstRoll ++;
+        // }
     }
 
     const goBackDemoMode = () => {
-        let ctime = performance.now();
+        let cctime = performance.now();
 
-        if(ctime - params.demoModeStopTime > 5000) {
+        if(cctime - params.demoModeStopTime > 5000) {
             clearInterval(intervalID3);
             initPhysics();
             initScene();
@@ -221,7 +247,11 @@
             startBtn.style.display = 'none';
             params.isAnimate = true;
             params.stime = performance.now();
-            animate();
+            params.changeFlag = true;
+            trigger1 = true;
+            trigger2 = true;
+            trigger3 = true;
+            animate(); params.isFirstRoll ++;
         }
     }
 
@@ -230,38 +260,108 @@
         params.xyz = rand % 6;
     };
 
+    let c = 0;
+    let trigger1 = true;
+    let trigger2 = true;
+    let trigger3 = true;
+    let fac1 = 0;
+    let fac2 = 0;
+    let fac3 = 0;
+
     const animate = () => {
         if(params.isAnimate == true) {
-            let ctime = performance.now();
-            let etime = ctime - params.stime;
 
+            let ccctime = performance.now();
+            let etime = ccctime - params.stime;
             physicsWorld.step(1 / 60);
             
-            if(etime < params.spinTime) {    
+            if(etime < params.spinTime) {
+                c ++;
+                // console.log(etime, c)
                 body.velocity.set(0, 0.3, 0);
+                    if(c <= 60) {
+                        if(trigger1) {
+                            fac1 = Math.random() < 0.5 ? 1 : -1;
+                            trigger1 = false;
+                        }
+                        if(params.mode == 1 || params.mode == 5 || params.mode == 6) {
+                            body.angularVelocity.set(fac1 * Math.PI * 4, 0, 0);
+                        } else if(params.mode == 2) {
+                            if(fac1 == 1) {
+                                body.angularVelocity.set(fac1 * Math.PI * 9 / 2, 0, 0);
+                            } else {
+                                body.angularVelocity.set(fac1 * Math.PI * 7 / 2, 0, 0);
+                            }
+                        } else if(params.mode == 3) {
+                            body.angularVelocity.set(fac1 * Math.PI * 5, 0, 0);
+                        } else {
+                            if(fac1 == 1) {
+                                body.angularVelocity.set(fac1 * Math.PI * 7 / 2, 0, 0);
+                            } else {
+                                body.angularVelocity.set(fac1 * Math.PI * 9 / 2, 0, 0);
+                            }
+                        }
+                    } else if(c < 121) {
+                        if(trigger2) {
+                            fac2 = Math.random() < 0.5 ? 1 : -1;
+                            trigger2 = false;
+                        }
+                        body.angularVelocity.set(0, fac2 * Math.PI * 4, 0);
+                    } else {
+                        if(trigger3) {
+                            fac3 = Math.random() < 0.5 ? 1 : -1;
+                            trigger3 = false;
+                        }
+
+                        if(params.mode == 5) {
+                            if(fac3 == 1) {
+                                body.angularVelocity.set(0, 0, fac3 * Math.PI * 9 / 2);
+                            } else {
+                                body.angularVelocity.set(0, 0, fac3 * Math.PI * 7 / 2);
+                            }
+                        } else if(params.mode == 6) {
+                            if(fac3 == 1) {
+                                body.angularVelocity.set(0, 0, fac3 * Math.PI * 7 / 2);
+                            } else {
+                                body.angularVelocity.set(0, 0, fac3 * Math.PI * 9 / 2);
+                            }
+                        } else {
+                            body.angularVelocity.set(0, 0, fac3 * Math.PI * 4);
+                        }
+                    }
+
+                // }
         
-                if(params.xyz == 0) {
-                    body.angularVelocity.set(Math.PI * 3, 0, 0);
-                } else if(params.xyz == 1) {
-                    body.angularVelocity.set(0, Math.PI * 3, 0);
-                } else if(params.xyz == 2) {
-                    body.angularVelocity.set(0, 0, Math.PI * 3);
-                } else if(params.xyz == 3) {
-                    body.angularVelocity.set(-Math.PI * 3, 0, 0);
-                } else if(params.xyz == 4) {
-                    body.angularVelocity.set(0, -Math.PI * 3, 0);
-                } else {
-                    body.angularVelocity.set(0, 0, -Math.PI * 3);
-                }
+                // if(params.xyz == 0) {
+                //     console.log(c, 0);
+                //     body.angularVelocity.set(Math.PI * 8 / 3, 0, 0);
+                // } else if(params.xyz == 1) {
+                //     console.log(c, 1);
+                //     body.angularVelocity.set(0, Math.PI * 8 / 3, 0);
+                // } else if(params.xyz == 2) {
+                //     console.log(c, 2);
+                //     body.angularVelocity.set(0, 0, Math.PI * 8 / 3);
+                // } else if(params.xyz == 3) {
+                //     console.log(c, 3);
+                //     body.angularVelocity.set(-Math.PI * 8 / 3, 0, 0);
+                // } else if(params.xyz == 4) {
+                //     console.log(c, 4);
+                //     body.angularVelocity.set(0, -Math.PI * 8 / 3, 0);
+                // } else {
+                //     console.log(c, 5);
+                //     body.angularVelocity.set(0, 0, -Math.PI * 8 / 3);
+                // }
             } else {
                 clearInterval(intervalID1);
                 body.angularVelocity.set(0, 0, 0);
+                params.changeFlag = false;
             }
         
             diceMesh.position.copy(body.position)
             diceMesh.quaternion.copy(body.quaternion)
         
             renderer.render(scene, camera);
+
             requestAnimationFrame(animate);
         }
     };
@@ -281,6 +381,7 @@
 
     const initRender = () => {
         //  create renderer
+        renderer = null;
         renderer = new THREE.WebGLRenderer({
             alpha: true,
             antialias: true,
@@ -288,7 +389,6 @@
         });
 
         renderer.shadowMap.enabled = true
-        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 10));
         renderer.setSize(300, 400);
         renderer.setClearColor(0xffffff);
     };
@@ -424,7 +524,7 @@
         
         params.isAnimate = true;
     
-        intervalID1 = setInterval(determineXYZ, 1000);
+        // intervalID1 = setInterval(determineXYZ, 1000);
         params.xyz = getRandomInt(0, 59) % 6;
 
         rollResult.style.color = "green";
@@ -444,7 +544,12 @@
             initDice();
 
             params.isAnimate = true;
-            animate();
+            params.changeFlag = true;
+            params.stime = performance.now();
+            trigger1 = true;
+            trigger2 = true;
+            trigger3 = true;
+            animate(); params.isFirstRoll ++;
 
             startBtn.addEventListener('click', () => {
                 startText.style.display = 'none';
@@ -456,7 +561,12 @@
                 initScene();
                 initDice();
                 params.isAnimate = true;
-                animate();
+                params.changeFlag = true;
+                params.stime = performance.now();
+                trigger1 = true;
+                trigger2 = true;
+                trigger3 = true;
+                animate(); params.isFirstRoll ++;
             });
 
             appBody.addEventListener('mouseover', () => {
